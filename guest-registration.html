@@ -84,7 +84,7 @@
       </div>
 
       <!-- Number of guests -->
-      <div class="mb-6">
+      <div class="mb-6" id="countSection">
         <p class="text-sm font-semibold text-gray-700 mb-3">
           How many guests will be staying? <span class="text-red-500">*</span>
         </p>
@@ -508,7 +508,6 @@ estNombre = estNombre || params.get('estNombre') || ''
 if (!estCodigo) {
   document.querySelector('#regForm')?.closest('.max-w-lg')?.classList.add('hidden')
   document.getElementById('invalidLinkScreen').classList.remove('hidden')
-  buildCountButtons(4)
 } else {
   document.getElementById('estCodigo').value = estCodigo
   document.getElementById('estNombre').value = estNombre
@@ -519,16 +518,17 @@ if (!estCodigo) {
     if (ogTitle) ogTitle.setAttribute('content', `Guest Registration — ${estNombre}`)
   }
 
-  const countMax = (nParam >= 1 && nParam <= MAX_GUESTS) ? nParam : 4
-  buildCountButtons(countMax)
-
   if (ref) {
     document.getElementById('reservationRef').value = ref
     document.getElementById('refDisplay').textContent = ref
   }
 
   if (nParam >= 1 && nParam <= MAX_GUESTS) {
+    // Nº huéspedes fijo desde la reserva — ocultar selector
+    document.getElementById('countSection').classList.add('hidden')
     selectCount(nParam, false)
+  } else {
+    buildCountButtons(4)
   }
 }
 
