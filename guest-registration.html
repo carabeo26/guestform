@@ -568,6 +568,27 @@ document.getElementById('regForm').addEventListener('submit', async function (e)
     return
   }
 
+  // Validar campos requeridos de cada huésped visible
+  const n = parseInt(numGuestsInput.value) || 1
+  const requiredFields = ['first_name', 'first_surname', 'doc_type', 'doc_number', 'dob', 'sex', 'nationality']
+  let firstError = null
+  for (let i = 1; i <= n; i++) {
+    for (const f of requiredFields) {
+      const el = document.querySelector(`[name="g${i}_${f}"]`)
+      if (el && !el.value.trim()) {
+        el.style.borderColor = '#ef4444'
+        el.addEventListener('input', () => el.style.borderColor = '', { once: true })
+        if (!firstError) firstError = el
+      }
+    }
+  }
+  if (firstError) {
+    firstError.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    errorMsg.textContent = 'Please fill in all required fields.'
+    errorMsg.classList.remove('hidden')
+    return
+  }
+
   submitBtn.disabled = true
   submitBtn.textContent = 'Sending…'
   errorMsg.classList.add('hidden')
