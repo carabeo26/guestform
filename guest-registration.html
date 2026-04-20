@@ -386,21 +386,23 @@ guestBlocksEl.insertAdjacentHTML('beforeend', `
   <div id="errorMsg" class="hidden text-sm text-red-600 bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-center"></div>
 `)
 
-// ─── Count buttons ────────────────────────────────────────────────────────
+// ─── Count buttons — se generan tras parsear URL params ──────────────────
 
 const countButtonsEl = document.getElementById('countButtons')
 const numGuestsInput = document.getElementById('numGuests')
 let currentCount = 0
 
-const countMax = (nParam >= 1 && nParam <= MAX_GUESTS) ? nParam : 4
-for (let n = 1; n <= countMax; n++) {
-  const btn = document.createElement('button')
-  btn.type = 'button'
-  btn.dataset.n = n
-  btn.textContent = n
-  btn.className = 'count-btn flex-1 py-4 text-xl font-medium rounded-xl border-2 border-gray-200 text-gray-500 transition-all'
-  btn.addEventListener('click', () => selectCount(n))
-  countButtonsEl.appendChild(btn)
+function buildCountButtons(max) {
+  countButtonsEl.innerHTML = ''
+  for (let n = 1; n <= max; n++) {
+    const btn = document.createElement('button')
+    btn.type = 'button'
+    btn.dataset.n = n
+    btn.textContent = n
+    btn.className = 'count-btn flex-1 py-4 text-xl font-medium rounded-xl border-2 border-gray-200 text-gray-500 transition-all'
+    btn.addEventListener('click', () => selectCount(n))
+    countButtonsEl.appendChild(btn)
+  }
 }
 
 function selectCount(n, scroll = true) {
@@ -432,7 +434,7 @@ function selectCount(n, scroll = true) {
 
 // ─── Support number logic (required for NIF / NIE) ────────────────────────
 
-for (let i = 1; i <= 4; i++) {
+for (let i = 1; i <= MAX_GUESTS; i++) {
   const docTypeSelect  = document.getElementById(`g${i}_doc_type`)
   const supportRow     = document.getElementById(`g${i}_support_row`)
   const supportInput   = document.getElementById(`g${i}_support`)
@@ -506,6 +508,7 @@ estNombre = estNombre || params.get('estNombre') || ''
 if (!estCodigo) {
   document.querySelector('#regForm')?.closest('.max-w-lg')?.classList.add('hidden')
   document.getElementById('invalidLinkScreen').classList.remove('hidden')
+  buildCountButtons(4)
 } else {
   document.getElementById('estCodigo').value = estCodigo
   document.getElementById('estNombre').value = estNombre
@@ -515,6 +518,9 @@ if (!estCodigo) {
     const ogTitle = document.querySelector('meta[property="og:title"]')
     if (ogTitle) ogTitle.setAttribute('content', `Guest Registration — ${estNombre}`)
   }
+
+  const countMax = (nParam >= 1 && nParam <= MAX_GUESTS) ? nParam : 4
+  buildCountButtons(countMax)
 
   if (ref) {
     document.getElementById('reservationRef').value = ref
